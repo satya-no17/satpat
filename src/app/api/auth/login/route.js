@@ -5,11 +5,11 @@ import jwt from 'jsonwebtoken'
 
 export async function POST(req) {
     try {
-        const { email, password } = req.json()
+        const { email, password } = await req.json()
         if (!email || !password) {
             return Response.json(
                 { message: 'invalid params' },
-                { status: 401 }
+                { status: 400 }
             )
         }
 
@@ -43,37 +43,39 @@ export async function POST(req) {
         const token = jwt.sign(
             {
                 id: user.id,
-                email:user.email
+                email: user.email
             },
             process.env.JWT_SC,
-            {expiresIn:'7d'}
+            { expiresIn: '7d' }
         )
 
         const response = Response.json(
-            {success:true,
-                user:{
-                    id:user.id,
-                    email:user.email,
-                    name:user.name,
-                    credits:user.credits
+            {
+                success: true,
+                user: {
+                    id: user.id,
+                    email: user.email,
+                    name: user.name,
+                    credits: user.credits
                 }
             },
-            {status:200}
+            { status: 200 }
         )
 
         response.headers.set(
-            "Set-Cookie",`token=${token}; HttpOnly ;Path-/;Max-Age=604800;SameSite=Strict`
+            "Set-Cookie", `token=${token}; HttpOnly ;Path=/;Max-Age=604800;SameSite=Strict`
         )
 
         return response
     } catch (error) {
         console.error(error)
         return Response.json(
-            { status: 500 },
             {
                 success: false,
                 message: 'server Error'
-            }
+            },
+            { status: 500 },
+
         )
     }
 

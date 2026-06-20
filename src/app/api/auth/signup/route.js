@@ -3,7 +3,7 @@ import { pool } from "@/lib/db";
 
 export async function POST(req) {
     try {
-        const { name, email, password } = req.json()
+        const { name, email, password } = await req.json()
         if (!name || !email || !password) {
             return Response.json(
                 { message: "invalid params" },
