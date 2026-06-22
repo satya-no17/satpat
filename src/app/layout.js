@@ -21,7 +21,7 @@ export default function RootLayout({ children }) {
   return (
     <html
       lang="en"
-      className={`${orbitron.variable} ${geistMono.variable} h-full antialiased `}
+      className={`${orbitron.variable} ${geistMono.variable} h-full antialiased dark`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>

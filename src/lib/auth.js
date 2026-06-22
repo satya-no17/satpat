@@ -15,6 +15,8 @@ export async function getUser() {
         token,
         process.env.JWT_SC
     );
+const { iat, exp, ...user } = decoded;
 
-    return decoded.id;
+return user;
+
 }
