@@ -13,7 +13,7 @@ export default function SignupPage() {
             className="flex size-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
             <GalleryVerticalEndIcon className="size-4" />
           </div>
-    SatPat Build
+    SatPat Build...
         </a>
         <SignupForm />
       </div>

@@ -1,4 +1,5 @@
-import { cn } from "@/lib/utils"
+'use client'
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -15,30 +16,49 @@ import {
   FieldSeparator,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import { Spinner } from "@/components/ui/spinner"
+import { useRouter } from "next/navigation"
 
 export function LoginForm() {
-
+  const [loading, setLoading] = useState(false)
+  const router = useRouter()
   const handleSubmit = async (e) => {
+
     e.preventDefault();
-    const formData = new FormData(e.target)
-    const res = await fetch("/api/auth/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email: formData.get("email"),
-        password: formData.get("password"),
-      }),
-    });
 
-    const data = await res.json();
+    try {
+      setLoading(true)
+      const formData = new FormData(e.target)
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: formData.get("email"),
+          password: formData.get("password"),
+        }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        router.push('/dashboard')
+      }
+      else {
+        alert(data.message || "Invalid credential")
+      }
 
-    console.log(data);
+    } catch (error) {
+      console.error(error);
+      alert("Something went wrong");
+    }
+    finally {
+      setLoading(false)
+    }
   };
 
   return (
     <div className="flex flex-col gap-6">
+
       <Card>
         <CardHeader className="text-center">
           <CardTitle className="text-xl">Welcome back</CardTitle>
@@ -61,9 +81,12 @@ export function LoginForm() {
                 <Input id="password" type="password" name="password" required />
               </Field>
               <Field>
-                <Button type="submit">Login</Button>
+                <Button type="submit" disabled={loading}>
+                  Login
+                  {loading && <><Spinner className="size-6" /></>}
+                </Button>
                 <FieldDescription className="text-center">
-                  Don&apos;t have an account? <a href="#">Sign up</a>
+                  Don&apos;t have an account? <a href="/signup">Sign up</a>
                 </FieldDescription>
               </Field>
             </FieldGroup>

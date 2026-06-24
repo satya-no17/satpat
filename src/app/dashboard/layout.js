@@ -1,13 +1,26 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/app-sidebar"
 import AppHeader from "@/components/app-header"
+import { pool } from "@/lib/db";
+import { getUser } from "@/lib/auth";
 
-export default function Layout({ children }) {
+export default async function Layout({ children }) {
+  const user = await getUser();
+  // const projects = await pool.query(
+  //   "SELECT * FROM projects WHERE user_id = $1",
+  //   [user.id]
+  // );
+
+  const userData = { ...user,
+    //  projects: projects.rows
+     }
+  console.log(userData)
+
   return (
     <SidebarProvider>
-      <AppSidebar />
-      <main className="w-full">
-        <AppHeader/>
+      <AppSidebar userData={userData} />
+      <main className="w-full" >
+        <AppHeader user={user} />
         {children}
       </main>
     </SidebarProvider>

@@ -9,12 +9,12 @@ export default async function Page() {
     [user.id]
   );
 
-  const userData = { ...user, projects: projects }
+  const userData = { ...user, projects: projects.rows }
   console.log(userData)
 
   return (
     <div>
-      <Hero />
+      <Hero userData = {userData}/>
     </div>
   );
 }

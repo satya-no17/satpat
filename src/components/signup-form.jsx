@@ -1,5 +1,7 @@
-import { cn } from "@/lib/utils"
+"use client"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
+import { Spinner } from "@/components/ui/spinner"
 import {
   Card,
   CardContent,
@@ -14,29 +16,44 @@ import {
   FieldLabel,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import { useRouter } from "next/navigation"
 
 export function SignupForm() {
+  const router = useRouter()
+  const [Loading, setLoading] = useState(false)
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const formData = new FormData(e.target)
+    try {
+      setLoading(true)
+      const formData = new FormData(e.target)
+      const res = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: formData.get("name"),
+          email: formData.get("email"),
+          password: formData.get("password"),
+        }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        alert("Account created");
+        router.push("/login");
+      } else {
+        alert(data.message);
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Something went wrong");
+    }
+    finally {
+      setLoading(false)
+    }
 
-    const res = await fetch("/api/auth/signup", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        name: formData.get("name"),
-        email: formData.get("email"),
-        password: formData.get("password"),
-      }),
-    });
 
-    const data = await res.json();
-
-    console.log(data);
-        console.log(data.user);
   };
   return (
     <div className="flex flex-col gap-6">
@@ -59,16 +76,10 @@ export function SignupForm() {
                 <Input id="email" type="email" name="email" placeholder="m@example.com" required />
               </Field>
               <Field>
-                <Field className="grid grid-cols-2 gap-4">
+                <Field className="grid  gap-4">
                   <Field>
                     <FieldLabel htmlFor="password">Password</FieldLabel>
                     <Input id="password" type="password" name="password" required />
-                  </Field>
-                  <Field>
-                    <FieldLabel htmlFor="confirm-password">
-                      Confirm Password
-                    </FieldLabel>
-                    <Input id="confirm-password" type="password" required />
                   </Field>
                 </Field>
                 <FieldDescription>
@@ -76,7 +87,10 @@ export function SignupForm() {
                 </FieldDescription>
               </Field>
               <Field>
-                <Button type="submit">Create Account</Button>
+                <Button type="submit" disabled={Loading}>
+                  Create Account
+                  {Loading && <><Spinner className="size-6" /></>}
+                </Button>
                 <FieldDescription className="text-center">
                   Already have an account? <a href="/login">Sign in</a>
                 </FieldDescription>

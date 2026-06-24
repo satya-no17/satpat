@@ -13,9 +13,13 @@ import { Button } from "./ui/button"
 import { PlusCircleIcon } from "lucide-react"
 import { useState } from "react"
 import { Progress } from "./ui/progress"
+import NewProjectModal from "./newProjectModal"
 
 
 export function AppSidebar() {
+
+
+  const [pName, setPName] = useState('')
   const [projectList, setProjectList] = useState([])
   const [userDetails, setUserDetails] = useState([])
   return (
@@ -25,7 +29,7 @@ export function AppSidebar() {
           <Image className='' src={'/logo.svg'} alt="logo" width={40} height={40} />
           <h2 className='pl-2 pr-2 text-xl'>SatPat Build</h2>
         </div>
-        <Button> <PlusCircleIcon/>New Project</Button>
+        <NewProjectModal/>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroupLabel>Projects</SidebarGroupLabel>
