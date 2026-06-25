@@ -4,7 +4,8 @@ import { getUser } from "@/lib/auth";
 export async function POST(request) {
     try {
 
-        const user_id = await getUser()
+        const user = await getUser()
+         const user_id = user.id
         const { name } = await request.json()
 
         if (!name) {

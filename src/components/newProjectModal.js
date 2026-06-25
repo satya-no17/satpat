@@ -23,7 +23,18 @@ export default function NewProjectModal() {
         e.preventDefault()
         setLoading(true)
         try {
-            
+            const res = await fetch('/api/projects/create',{
+                method:"POST",
+                headers:{"Content-Type":"application/json"},
+                body:JSON.stringify({
+                    name:pName
+                })
+            })
+            const data = await res.json()
+            if (res.ok){
+                router.push(`dashboard/projects/${data.project.id}`)
+            }
+
         } catch (error) {
             
         }
@@ -46,7 +57,7 @@ export default function NewProjectModal() {
                 <div className="space-y-4">
                     <Input placeholder="Project Name" value={pName} onChange={(e) => setPName(e.target.value)} />
 
-                    <Button>Create{loading&&<Spinner/>}</Button>
+                    <Button onClick={handleclick}>Create{loading&&<Spinner/>}</Button>
                 </div>
             </DialogContent>
         </Dialog>

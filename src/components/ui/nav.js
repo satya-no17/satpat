@@ -4,8 +4,16 @@ import React from 'react'
 import { Button } from './button'
 import  Image  from 'next/image';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
-const Navbar = ({btn}) => {
+const Navbar = () => {
+const router = useRouter()
+  const goSignup = ()=>{
+    router.push('/signup')
+  }
+  const goLogin = ()=>{
+    router.push('/login')
+  }
 
 
   return (<>
@@ -22,8 +30,8 @@ const Navbar = ({btn}) => {
             </ul>
         </div>
         <div>
-            <Button onClick={btn}>Log in</Button>
-            <Button onClick={btn}>Get started</Button>
+            <Button onClick={goLogin}>Log in</Button>
+            <Button onClick={goSignup}>Get started</Button>
         </div>
     </div></>
   )
