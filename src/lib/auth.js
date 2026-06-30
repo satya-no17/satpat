@@ -11,12 +11,16 @@ export async function getUser() {
         throw new Error("Unauthorized");
     }
 
-    const decoded = jwt.verify(
-        token,
-        process.env.JWT_SC
-    );
-const { iat, exp, ...user } = decoded;
+    try {
+        const decoded = jwt.verify(
+            token,
+            process.env.JWT_SC
+        );
 
-return user;
+        const { iat, exp, ...user } = decoded;
 
+        return user;
+    } catch {
+        throw new Error("Unauthorized");
+    }
 }

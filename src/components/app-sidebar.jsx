@@ -36,7 +36,7 @@ export function AppSidebar({userData}) {
          ( <div className='flex items-center w-full'>
           <h2 className="text-sm px-2 text-gray-500">No Projects</h2></div>):
           (userData.projects.map((project)=>(
-            <div onClick={()=>{router.push(`/dashboard/projects/${project.id}`)}} className="p-2 border rounded-sm m-2 "key={project.id}>{project.name}</div>
+            <div onClick={()=>{router.push(`/projects/${project.id}`)}} className="p-2 border rounded-sm m-2 "key={project.id}>{project.name} </div>
           )))}
         </SidebarGroup>
         <SidebarGroup />

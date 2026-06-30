@@ -3,18 +3,10 @@ import { getUser } from "@/lib/auth";
 import { pool } from "@/lib/db";
 
 export default async function Page() {
-  // const user = await getUser();
-  // const projects = await pool.query(
-  //   "SELECT * FROM projects WHERE user_id = $1",
-  //   [user.id]
-  // );
-
-  // const userData = { ...user, projects: projects.rows }
-  // console.log(userData)
 
   return (
     <div>
-      <Hero/>
+      <Hero />
     </div>
   );
 }

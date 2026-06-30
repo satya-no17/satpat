@@ -15,7 +15,7 @@ export async function GET() {
             )
         }
         const res = await pool.query(
-            `SELECT * FROM projects WHERE user_id = $1`, [user_id]
+            `SELECT (name) FROM projects WHERE user_id = $1`, [user_id]
         )
         if (res.rows.length === 0) {
             return Response.json(

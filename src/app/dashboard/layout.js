@@ -3,12 +3,12 @@ import { AppSidebar } from "@/components/app-sidebar"
 import AppHeader from "@/components/app-header"
 import { pool } from "@/lib/db";
 import { getUser } from "@/lib/auth";
-import Hero from "@/components/hero";
+import { redirect } from 'next/navigation';
 
 export default async function Layout({ children }) {
   const user = await getUser();
   const projects = await pool.query(
-    "SELECT id,user_id,name FROM projects WHERE user_id = $1",
+    "SELECT id,name FROM projects WHERE user_id = $1",
     [user.id]
   );
  const credits = await pool.query(
@@ -20,14 +20,13 @@ export default async function Layout({ children }) {
      credits: credits.rows[0].credits
      }
   console.log(userData)
-  console.log(userData.projects[0].name)
-
+  console.log(userData.projects[0]?.name)
   return (
     <SidebarProvider>
       <AppSidebar userData={userData} />
       <main className="w-full" >
         <AppHeader user={user} />
-              <Hero/>
+        {children}
       </main>
     </SidebarProvider>
   )

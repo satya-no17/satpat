@@ -6,14 +6,17 @@ export async function GET(_, { params }) {
 
     try {
         const user_id = await getUser()
-        const { id } = params
+        const {id} = await params
+
+        console.log("Fetching project - user_id:", user_id, "project id:", id)
 
         const res = await pool.query(
             `SELECT * FROM projects
-       WHERE id = $1 AND user_id = $2`,
-            [id, user_id]
+       WHERE id = $1`,
+            [id]
         )
-        if (result.rows.length === 0) {
+        console.log("Query result rows:", res.rows[0])
+        if (res.rows.length === 0) {
             return Response.json(
                 {
                     success: false,
@@ -28,7 +31,7 @@ export async function GET(_, { params }) {
         return Response.json(
             {
                 success: true,
-                project: result.rows[0],
+                project: res.rows[0],
             },
             {
                 status: 200,
@@ -105,7 +108,7 @@ export async function DELETE(_, { params }) {
         const user_id = await getUser()
         const { id } = params
 
-        const res = await pool.query(
+        const result = await pool.query(
             `DELETE FROM projects
        WHERE id = $1
        AND user_id = $2

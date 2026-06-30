@@ -18,7 +18,7 @@ const router = useRouter()
 
   return (<>
 
-    <div className='flex items-center p-3 shadow justify-between'>
+    <div className='flex items-center p-3 shadow border-b border-b-[#00ff88] justify-between'>
         <div>
        <Image className='' src={'/logo.svg'} alt="logo" width={40} height={40}/>
         </div>

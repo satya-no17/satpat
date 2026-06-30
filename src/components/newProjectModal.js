@@ -17,34 +17,37 @@ import { useRouter } from "next/navigation"
 
 export default function NewProjectModal() {
     const router = useRouter()
+    const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(false)
     const [pName, setPName] = useState('')
     const handleclick = async (e) => {
         e.preventDefault()
         setLoading(true)
         try {
-            const res = await fetch('/api/projects/create',{
-                method:"POST",
-                headers:{"Content-Type":"application/json"},
-                body:JSON.stringify({
-                    name:pName
+            const res = await fetch('/api/projects/create', {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    name: pName
                 })
             })
             const data = await res.json()
-            if (res.ok){
-                router.push(`dashboard/projects/${data.project.id}`)
+            if (res.ok) {
+                setOpen(false);
+                router.push(`/projects/${data.project.id}`)
+                router.refresh()
             }
 
         } catch (error) {
-            
+
         }
-        finally{
+        finally {
             setLoading(false)
         }
     }
 
     return (
-        <Dialog>
+        <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
                 <Button> <PlusCircleIcon /> New Project</Button>
             </DialogTrigger>
@@ -57,7 +60,7 @@ export default function NewProjectModal() {
                 <div className="space-y-4">
                     <Input placeholder="Project Name" value={pName} onChange={(e) => setPName(e.target.value)} />
 
-                    <Button onClick={handleclick}>Create{loading&&<Spinner/>}</Button>
+                    <Button disabled={loading} onClick={handleclick}>Create{loading && <Spinner />}</Button>
                 </div>
             </DialogContent>
         </Dialog>

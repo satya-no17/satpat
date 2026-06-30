@@ -1,0 +1,9 @@
+import React from 'react'
+
+const Element = () => {
+  return (
+    <div className='w-96 shadow'>Eleme</div>
+  )
+}
+
+export default Element
