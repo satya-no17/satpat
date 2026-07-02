@@ -20,7 +20,6 @@ export default async function Layout({ children }) {
      credits: credits.rows[0].credits
      }
   console.log(userData)
-  console.log(userData.projects[0]?.name)
   return (
     <SidebarProvider>
       <AppSidebar userData={userData} />

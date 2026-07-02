@@ -16,6 +16,7 @@ export async function GET(_, { params }) {
             [id]
         )
         console.log("Query result rows:", res.rows[0])
+        
         if (res.rows.length === 0) {
             return Response.json(
                 {
