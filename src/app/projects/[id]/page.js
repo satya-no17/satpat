@@ -13,6 +13,38 @@ const Page = () => {
   const [prompt, setPrompt] = useState('')
   const [Chatmsgs, setChatsmsgs] = useState([])
   const [generatedCode, setGeneratedCode] = useState('')
+  const [code, setCode] = useState('')
+  const [save, setSave] = useState(false)
+  const [projectName, setProjectName] = useState('')
+  const [dataLoading, setDataLoading] = useState(false)
+
+  useEffect(() => {
+    if (!id) { return }
+    const getCode = async () => {
+      try {
+        const result = await fetch(`/api/projects/${id}`);
+
+        if (!result.ok) {
+          throw new Error('Failed to fetch project');
+        }
+
+        const data = await result.json();
+
+
+        setGeneratedCode(data.project.code);
+        setProjectName(data.project.name)
+
+        const chats = data.project.chats
+        setChatsmsgs(chats || []);
+
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    id && getCode()
+  }, [id])
+
+
 
 
   const handleClick = async () => {
@@ -56,12 +88,12 @@ const Page = () => {
         const chunk = decoder.decode(value, { stream: true })
         aiResponse += chunk
 
-        // chekc ai is sending
 
-        if (!isCode && aiResponse.includes('```code')) {
+
+        if (!isCode && aiResponse.includes('```html')) {
           isCode = true
 
-          const index = aiResponse.indexOf('```code') + '```code'.length
+          const index = aiResponse.indexOf('```html') + 7
 
           const initialCodeChunk = aiResponse.slice(index)
 
@@ -71,9 +103,6 @@ const Page = () => {
         } else if (isCode) {
           setGeneratedCode(prev => prev + chunk)
         }
-      }
-      if (isCode) {
-        setGeneratedCode(prev => prev.replace(/```$/, ''))
       }
       if (!isCode) {
         setChatsmsgs(prev => [
@@ -87,8 +116,7 @@ const Page = () => {
           { id: 2, chat: 'your code is ready to roll' }
         ])
       }
-      // check(currentPrompt)
-      // setChatsmsgs(prev=>[...prev , {chat: response,id:2}])
+
     } catch (error) {
       console.error(error)
     }
@@ -99,29 +127,48 @@ const Page = () => {
     }
   }
 
-  // console.log(id)
-  // useEffect(() => {
-
-  //   id && getCode()
-
-  // }, [id])
-  const getCode = async () => {
-    const result = await fetch(`/api/projects/${id}`, {
-      method: "GET",
-    })
-    console.log(result)
-
-  }
 
 
   useEffect(() => {
-    console.log(generatedCode)
-  }, [generatedCode])
+    if (!save) {
+      return
+    }
+
+    const saveData = async () => {
+      setDataLoading(true)
+      try {
+        const result = await fetch(`/api/projects/${id}`, {
+          method: "PUT",
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            content: generatedCode,
+            name: projectName,
+            chats: Chatmsgs
+          })
+        })
+        if (!result.ok) {
+          throw new Error('Failed to put data')
+        }
+        const res = await result.json()
+        console.log(res)
+      } catch (error) {
+        console.error(error)
+      }
+      finally {
+        setDataLoading(false)
+        setSave(false)
+      }
+    }
+
+    save && saveData()
+  }, [save, id, generatedCode, projectName, Chatmsgs])
 
 
   return (
     <div className=''>
-      <ProjectHeader />
+      <ProjectHeader setSave={setSave} dataLoading={dataLoading} />
       <div className='flex'>
         <Chats handleClick={handleClick}
           Loading={Loading}
@@ -129,7 +176,7 @@ const Page = () => {
           setPrompt={setPrompt}
           Chatmsgs={Chatmsgs} />
 
-        <WebsiteDes />
+        <WebsiteDes generatedCode={generatedCode?.replace('```', '')} />
 
         {/* <Element /> */}
       </div>

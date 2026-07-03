@@ -11,7 +11,7 @@ export async function GET(_, { params }) {
         console.log("Fetching project - user_id:", user_id, "project id:", id)
 
         const res = await pool.query(
-            `SELECT * FROM projects
+            `SELECT name,chats,code FROM projects
        WHERE id = $1`,
             [id]
         )
@@ -53,20 +53,21 @@ export async function GET(_, { params }) {
 export async function PUT(req, { params }) {
 
     try {
-        const user_id = await getUser()
-        const { id } = params
+        const user = await getUser()
+        const { id } = await params
 
-        const { content, name } = await req.json();
-
+        const { content, name,chats } = await req.json();
+        console.log(content, name,chats)
         const result = await pool.query(
             `UPDATE projects
-       SET content = $1,
+       SET code = $1,
            name = $2,
+            chats=$3,
            updated_at = NOW()
-       WHERE id = $3
-       AND user_id = $4
+       WHERE id = $4
+       AND user_id = $5
        RETURNING *`,
-            [content, name, id, user_id]
+            [content, name,JSON.stringify(chats), id, user.id]
         );
 
         if (result.rows.length === 0) {
@@ -107,7 +108,7 @@ export async function PUT(req, { params }) {
 export async function DELETE(_, { params }) {
     try {
         const user_id = await getUser()
-        const { id } = params
+        const { id } = await params
 
         const result = await pool.query(
             `DELETE FROM projects
