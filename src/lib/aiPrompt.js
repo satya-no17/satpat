@@ -8,6 +8,7 @@ Instructions:
    - Only include the <body> content (do not add <head> or <html> etc.).
    - response must start with \`\`\`html and end with \`\`\`
    - never give any thing else except code and give only the <body> content no markdown,comment advice outside <body>
+   - never give anything else except code
    - Make it fully responsive for all screen sizes.
    - All primary components must match the theme color.
    - Add proper padding and margin for each element.

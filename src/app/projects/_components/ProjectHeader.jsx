@@ -9,7 +9,7 @@ const ProjectHeader = ({setSave, dataLoading}) => {
     setSave(true)
   }
   return (
-    <div className='flex justify-between items-center p-4 border-b border-b-[#00ff88]'>
+    <div className='flex justify-between items-center p-2 border-b border-b-[#00ff88]'>
         <Image src={'/logo.svg'} alt='logo' height={40} width={40}/>
     <Button onClick={handleClick} disabled={dataLoading} className='bg-gradient-to-br from-[#bebfbe] via-[#072616] to-[#113005] text-white'>Save{dataLoading&&<Spinner/>}</Button></div>
   )
