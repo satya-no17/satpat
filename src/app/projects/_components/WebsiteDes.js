@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Tool from './Tool';
 
+
 function WebsiteDes({ generatedCode }) {
     const iframeRef = useRef(null);
     const [screenSize, setScreenSize] = useState(false)
@@ -133,7 +134,7 @@ function WebsiteDes({ generatedCode }) {
             className={`${screenSize?'w-100':'w-full'} h-[85vh] border rounded-lg bg-white `}
             sandbox="allow-scripts allow-same-origin"
         />
-        <Tool screenSize={screenSize} setScreenSize={setScreenSize}/>
+        <Tool screenSize={screenSize} setScreenSize={setScreenSize} generatedCode={generatedCode}/>
        </div>
     );
 }
