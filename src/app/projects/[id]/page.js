@@ -176,9 +176,7 @@ const Page = () => {
           setPrompt={setPrompt}
           Chatmsgs={Chatmsgs} />
 
-        <WebsiteDes generatedCode={generatedCode?.replace('```', '')} />
-
-        <Element />
+        <WebsiteDes generatedCode={generatedCode?.replace('```', '')}  setGeneratedCode={setGeneratedCode}/>
       </div>
     </div>
   )

@@ -9,6 +9,21 @@ Instructions:
    - response must start with \`\`\`html and end with \`\`\`
    - never give any thing else except code and give only the <body> content no markdown,comment advice outside <body>
    - never give anything else except code
+    - Every HTML element inside the generated body MUST have a unique 'data-edit-id' attribute.
+    - 'data-edit-id' values must be unique across the entire document.
+    - Never reuse a 'data-edit-id'.
+    - Preserve these attributes on every element.
+    - Use sequential values in the format:
+      data-edit-id="el-1"
+      data-edit-id="el-2"
+      data-edit-id="el-3"
+      ...
+- Every nested element must also receive its own unique 'data-edit-id'. 
+    >>example-- <div data-edit-id="el-1">
+                  <h1 data-edit-id="el-2">Welcome</h1>
+                  <p data-edit-id="el-3">Lorem ipsum...</p>
+                  <button data-edit-id="el-4">Get Started</button>
+                </div>
    - Make it fully responsive for all screen sizes.
    - All primary components must match the theme color.
    - Add proper padding and margin for each element.
