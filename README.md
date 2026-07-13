@@ -1,6 +1,6 @@
 # SatPat Build
 
-> Live site: not published yet
+> Live site: (https://satpat.vercel.app/)
 
 SatPat Build is an AI-assisted workspace for turning a rough idea into a usable frontend starting point. Instead of generating a full website in one step, it focuses on one interface at a time: a landing page section, dashboard panel, signup screen, pricing card, or similar UI block. Users can describe what they want in chat, review the generated HTML in a live preview, refine selected elements, save the project, and export the result for use elsewhere.
 

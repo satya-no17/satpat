@@ -22,10 +22,12 @@ const router = useRouter()
         <div>
        <Image className='' src={'/logo.svg'} alt="logo" width={40} height={40}/>
         </div>
-        <div className='hidden sm:block'>
-            <ul className='flex items-center gap-6 text-sm text-muted-foreground'>
+        <div className='hidden md:block'>
+            <ul className='flex items-center gap-5 text-sm text-muted-foreground'>
                 <li><a className='transition-colors hover:text-foreground' href='#about'>About</a></li>
+                <li><a className='transition-colors hover:text-foreground' href='#phase'>Phase</a></li>
                 <li><a className='transition-colors hover:text-foreground' href='#pricing'>Pricing</a></li>
+                <li><a className='transition-colors hover:text-foreground' href='#docs'>Docs</a></li>
             </ul>
         </div>
         <div className='flex items-center gap-2'>
