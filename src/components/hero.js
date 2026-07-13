@@ -1,8 +1,15 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { ArrowUp, ImagePlus, Sparkles, TriangleAlert } from 'lucide-react'
+import { ArrowUp, BriefcaseBusiness, Camera, Download, GitBranch, ImagePlus, Layers3, MousePointer2, Sparkles, TriangleAlert, WandSparkles } from 'lucide-react'
 import React, { useState } from 'react'
+
+// Replace these placeholder URLs with Satya's public profiles before launch.
+const socialLinks = [
+  { label: 'GitHub', href: 'https://github.com/satya-no17', icon: GitBranch },
+  { label: 'LinkedIn', href: 'https://www.linkedin.com/in/satyam-kumar-929b97325/', icon: BriefcaseBusiness },
+  { label: 'Instagram', href: 'https://www.instagram.com/dumb_not_in_love/', icon: Camera },
+]
 
 const Hero = ({ dashboard = false }) => {
   const [prompt, setPrompt] = useState('')
@@ -36,7 +43,6 @@ const Hero = ({ dashboard = false }) => {
             <Sparkles className="size-4" /> Turn ideas into polished interfaces
           </div>
         )}
-
         <h1 className="max-w-4xl bg-gradient-to-br from-foreground via-emerald-700 to-emerald-950 bg-clip-text text-4xl font-bold tracking-tight text-transparent sm:text-5xl lg:text-6xl dark:from-white dark:via-emerald-300 dark:to-emerald-600">
           {dashboard ? 'Start with a project' : 'What do you want to design?'}
         </h1>
@@ -79,7 +85,31 @@ const Hero = ({ dashboard = false }) => {
               <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-600">About SatPat Build</p>
               <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">A calmer way to begin building.</h2>
             </div>
-            <p className="text-lg leading-8 text-muted-foreground">SatPat Build helps you turn a rough product thought into a clear, beautiful starting point. Describe the experience you have in mind and let the workspace help you shape it, one project at a time.</p>
+            <p className="text-lg leading-8 text-muted-foreground">SatPat Build helps you turn a rough product thought into a clear, beautiful starting point. Describe the experience you have in mind and let the workspace help you shape it, one project at a time. It uses a non-reasoning model, so it does not store or reuse information from previous chats but you can save it inside a project for future.</p>
+          </section>
+
+          <section className="mx-auto max-w-6xl px-5 py-8 sm:py-16">
+            <div className="mb-10 max-w-2xl">
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-600">How it works</p>
+              <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">From a simple thought to an editable interface.</h2>
+            </div>
+            <div className="grid gap-5 md:grid-cols-3">
+              <div className="rounded-2xl border bg-card p-6 shadow-sm">
+                <div className="flex size-11 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600"><WandSparkles className="size-5" /></div>
+                <h3 className="mt-5 text-lg font-semibold">1. Describe</h3>
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">Tell SatPat Build about the section, page, or component you want to create.</p>
+              </div>
+              <div className="rounded-2xl border bg-card p-6 shadow-sm">
+                <div className="flex size-11 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600"><MousePointer2 className="size-5" /></div>
+                <h3 className="mt-5 text-lg font-semibold">2. Refine</h3>
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">Select generated elements and tune their text, spacing, color, alignment, and classes.</p>
+              </div>
+              <div className="rounded-2xl border bg-card p-6 shadow-sm">
+                <div className="flex size-11 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600"><Download className="size-5" /></div>
+                <h3 className="mt-5 text-lg font-semibold">3. Take it further</h3>
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">Save the project or export the finished component as plain HTML or a React file.</p>
+              </div>
+            </div>
           </section>
 
           <section id="pricing" className="mx-auto max-w-6xl px-5 pb-24">
@@ -97,6 +127,25 @@ const Hero = ({ dashboard = false }) => {
               </div>
             </div>
           </section>
+
+          <footer className="border-t bg-card/50">
+            <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-5 px-5 py-10 text-center sm:flex-row sm:text-left">
+              <div>
+                <div className="flex items-center justify-center gap-2 sm:justify-start">
+                  <Layers3 className="size-5 text-emerald-600" />
+                  <span className="font-semibold">SatPat Build</span>
+                </div>
+                <p className="mt-2 text-sm text-muted-foreground">Built with care by Satya.</p>
+              </div>
+              <div className="flex items-center gap-3">
+                {socialLinks.map(({ label, href, icon: Icon }) => (
+                  <a key={label} href={href} target="_blank" rel="noreferrer" aria-label={`Satya on ${label}`} className="flex size-10 items-center justify-center rounded-full border text-muted-foreground transition-colors hover:border-emerald-500 hover:bg-emerald-500/10 hover:text-emerald-600">
+                    <Icon className="size-5" />
+                  </a>
+                ))}
+              </div>
+            </div>
+          </footer>
         </>
       )}
     </div>
