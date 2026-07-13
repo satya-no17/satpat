@@ -231,4 +231,4 @@ Bug reports and feature ideas are especially valuable when they include steps to
 
 ## License
 
-Add an appropriate license before public distribution.
+This project is licensed under the MIT License. See the LICENSE file for details.
