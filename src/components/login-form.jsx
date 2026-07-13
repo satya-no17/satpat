@@ -21,8 +21,10 @@ import { useRouter } from "next/navigation"
 
 export function LoginForm() {
   const [loading, setLoading] = useState(false)
+  const [redirecting, setRedirecting] = useState(false)
   const router = useRouter()
   const handleSubmit = async (e) => {
+    let shouldKeepLoading = false
 
     e.preventDefault();
 
@@ -41,7 +43,10 @@ export function LoginForm() {
       });
       const data = await res.json();
       if (res.ok) {
-        router.push('/dashboard')
+        shouldKeepLoading = true
+        setRedirecting(true)
+        router.replace('/dashboard')
+        return
       }
       else {
         alert(data.message || "Invalid credential")
@@ -52,7 +57,7 @@ export function LoginForm() {
       alert("Something went wrong");
     }
     finally {
-      setLoading(false)
+      if (!shouldKeepLoading) setLoading(false)
     }
   };
 
@@ -69,7 +74,7 @@ export function LoginForm() {
             <FieldGroup>
               <Field>
                 <FieldLabel htmlFor="email">Email</FieldLabel>
-                <Input id="email" type="email" name='email' placeholder="m@example.com" required />
+                <Input id="email" type="email" name='email' placeholder="m@example.com" required disabled={loading || redirecting} />
               </Field>
               <Field>
                 <div className="flex items-center">
@@ -78,12 +83,12 @@ export function LoginForm() {
                     Forgot your password?
                   </a>
                 </div>
-                <Input id="password" type="password" name="password" required />
+                <Input id="password" type="password" name="password" required disabled={loading || redirecting} />
               </Field>
               <Field>
-                <Button type="submit" disabled={loading}>
-                  Login
-                  {loading && <><Spinner className="size-6" /></>}
+                <Button type="submit" disabled={loading || redirecting}>
+                  {redirecting ? 'Redirecting to dashboard…' : 'Login'}
+                  {(loading || redirecting) && <Spinner className="size-6" />}
                 </Button>
                 <FieldDescription className="text-center">
                   Don&apos;t have an account? <a href="/signup">Sign up</a>

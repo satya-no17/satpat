@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react'
 import ProjectHeader from '../_components/ProjectHeader'
 import WebsiteDes from '../_components/WebsiteDes'
 import Chats from '../_components/Chats'
-import Element from '../_components/Element'
 import { useParams } from 'next/navigation'
 
 const Page = () => {
@@ -17,10 +16,12 @@ const Page = () => {
   const [save, setSave] = useState(false)
   const [projectName, setProjectName] = useState('')
   const [dataLoading, setDataLoading] = useState(false)
+  const [projectLoading, setProjectLoading] = useState(true)
 
   useEffect(() => {
     if (!id) { return }
     const getCode = async () => {
+      setProjectLoading(true)
       try {
         const result = await fetch(`/api/projects/${id}`);
 
@@ -39,6 +40,8 @@ const Page = () => {
 
       } catch (error) {
         console.error(error);
+      } finally {
+        setProjectLoading(false)
       }
     };
     id && getCode()
@@ -169,14 +172,18 @@ const Page = () => {
   return (
     <div className=''>
       <ProjectHeader setSave={setSave} dataLoading={dataLoading} />
-      <div className='flex'>
+      <div className='flex flex-col xl:flex-row'>
         <Chats handleClick={handleClick}
           Loading={Loading}
           prompt={prompt}
           setPrompt={setPrompt}
           Chatmsgs={Chatmsgs} />
 
-        <WebsiteDes generatedCode={generatedCode?.replace('```', '')}  setGeneratedCode={setGeneratedCode}/>
+        <WebsiteDes
+          generatedCode={generatedCode?.replace('```', '')}
+          setGeneratedCode={setGeneratedCode}
+          isLoading={projectLoading}
+        />
       </div>
     </div>
   )

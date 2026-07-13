@@ -3,6 +3,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Tool from './Tool';
 import Element from './Element';
+import { Spinner } from '@/components/ui/spinner';
+import { FileCode2 } from 'lucide-react';
 
 
 const HTML_code = `<!DOCTYPE html>
@@ -35,10 +37,34 @@ const HTML_code = `<!DOCTYPE html>
             </body>
             </html>`
 
-function WebsiteDes({ generatedCode, setGeneratedCode }) {
+// Ensure every element in the HTML string has a stable data-edit-id.
+// Run this ONCE whenever fresh generatedCode arrives (e.g. right after
+// the AI response comes in, before it's ever pushed into the iframe).
+export const assignEditIds = (html) => {
+    if (!html) return html;
+    const parser = new DOMParser();
+    const cleanHtml = html
+        ?.replace(/```html/g, '')
+        ?.replace(/```/g, '')
+        ?.trim() || '';
+
+    const doc = parser.parseFromString(`<div id="root">${cleanHtml}</div>`, 'text/html');
+    let counter = 0;
+
+    doc.querySelectorAll('#root *').forEach((el) => {
+        if (!el.getAttribute('data-edit-id')) {
+            el.setAttribute('data-edit-id', `el-${Date.now()}-${counter++}`);
+        }
+    });
+
+    return doc.getElementById('root').innerHTML;
+};
+
+function WebsiteDes({ generatedCode, setGeneratedCode, isLoading }) {
     const iframeRef = useRef(null);
     const [screenSize, setScreenSize] = useState(false);
     const [isIframeLoaded, setIsIframeLoaded] = useState(false);
+    const [selectedElement, setSelectedElement] = useState(null);
 
     // Fallback: check if the iframe is already loaded on mount
     useEffect(() => {
@@ -48,86 +74,41 @@ function WebsiteDes({ generatedCode, setGeneratedCode }) {
         }
     }, []);
 
-    // useEffect(() => {
+    // Commit whatever the live DOM node currently looks like (style + class)
+    // back into generatedCode, keyed by data-edit-id.
+    const syncElementToCode = (editId) => {
+        if (!editId) return;
+        const iframe = iframeRef.current;
+        const doc = iframe?.contentDocument || iframe?.contentWindow?.document;
+        if (!doc) return;
 
-    //     if (!isIframeLoaded) return;
-    //     const iframe = iframeRef.current;
-    //     if (!iframe) return;
-    //     const doc = iframe.contentDocument || iframe.contentWindow?.document;
-    //     if (!doc) return;
+        const liveEl = doc.querySelector(`[data-edit-id="${editId}"]`);
+        if (!liveEl) return;
 
-    //     let hoverEl = null;
-    //     let selectedEl = null;
+        setGeneratedCode((prevCode) => {
+            const parser = new DOMParser();
+            const parsedDoc = parser.parseFromString(
+                `<div id="root">${prevCode}</div>`,
+                "text/html"
+            );
 
-    //     const handleMouseOver = (e) => {
-    //         if (selectedEl) return;
-    //         const target = e.target;
-    //         if (hoverEl && hoverEl !== target) {
-    //             hoverEl.style.outline = "";
-    //         }
-    //         hoverEl = target;
-    //         hoverEl.style.outline = "2px dotted blue";
-    //     };
+            const originalElement = parsedDoc.querySelector(`[data-edit-id="${editId}"]`);
+            if (!originalElement) return prevCode;
 
-    //     const handleMouseOut = (e) => {
-    //         if (selectedEl) return;
-    //         if (hoverEl) {
-    //             hoverEl.style.outline = "";
-    //             hoverEl = null;
-    //         }
-    //     };
+            // sync inline style
+            const styleAttr = liveEl.getAttribute('style');
+            if (styleAttr) {
+                originalElement.setAttribute('style', styleAttr);
+            } else {
+                originalElement.removeAttribute('style');
+            }
 
-    //     const handleClick = (e) => {
-    //         e.preventDefault();
-    //         e.stopPropagation();
-    //         const target = e.target;
+            // sync classes
+            originalElement.className = liveEl.className;
 
-    //         if (selectedEl && selectedEl !== target) {
-    //             selectedEl.style.outline = "";
-    //             selectedEl.removeAttribute("contenteditable");
-    //         }
-
-    //         selectedEl = target;
-    //         selectedEl.style.outline = "2px solid red";
-    //         selectedEl.setAttribute("contenteditable", "true");
-    //         selectedEl.focus();
-    //         console.log("Selected element:", selectedEl);
-    //     };
-
-    //     const handleBlur = () => {
-    //         if (selectedEl) {
-    //             console.log("Final edited element:", selectedEl.outerHTML);
-    //         }
-    //     };
-
-    //     const handleKeyDown = (e) => {
-    //         if (e.key === "Escape" && selectedEl) {
-    //             selectedEl.style.outline = "";
-    //             selectedEl.removeAttribute("contenteditable");
-    //             selectedEl.removeEventListener("blur", handleBlur);
-    //             selectedEl = null;
-    //         }
-    //     };
-
-    //     const body = doc.body;
-    //     if (body) {
-    //         body.addEventListener("mouseover", handleMouseOver);
-    //         body.addEventListener("mouseout", handleMouseOut);
-    //         body.addEventListener("click", handleClick);
-    //     }
-    //     doc.addEventListener("keydown", handleKeyDown);
-
-    //     // Cleanup on unmount
-    //     return () => {
-    //         if (body) {
-    //             body.removeEventListener("mouseover", handleMouseOver);
-    //             body.removeEventListener("mouseout", handleMouseOut);
-    //             body.removeEventListener("click", handleClick);
-    //         }
-    //         doc.removeEventListener("keydown", handleKeyDown);
-    //     };
-    // }, [isIframeLoaded]);
-
+            return parsedDoc.getElementById("root").innerHTML;
+        });
+    };
 
     useEffect(() => {
         if (!isIframeLoaded) return;
@@ -195,6 +176,7 @@ function WebsiteDes({ generatedCode, setGeneratedCode }) {
             e.stopPropagation();
 
             const target = e.target;
+            setSelectedElement(target);
 
             // Remove previous selection
             if (selectedEl && selectedEl !== target) {
@@ -217,12 +199,6 @@ function WebsiteDes({ generatedCode, setGeneratedCode }) {
 
             selectedEl.removeEventListener("blur", handleBlur);
             selectedEl.addEventListener("blur", handleBlur);
-
-            console.log(
-                "Selected:",
-                selectedEl.dataset.editId,
-                selectedEl
-            );
         };
 
         const handleKeyDown = (e) => {
@@ -294,20 +270,44 @@ function WebsiteDes({ generatedCode, setGeneratedCode }) {
         }, 100);
     }, [generatedCode, isIframeLoaded]);
 
+    const hasGeneratedCode = Boolean(generatedCode?.trim());
+
     return (
-        <div className='flex w-full'>
-            <div className='flex items-center flex-col w-full p-2'>
-                <iframe
-                    ref={iframeRef}
-                    title="Website Preview"
-                    srcDoc={HTML_code}
-                    className={`${screenSize ? 'w-100' : 'w-full'} h-[85vh] border rounded-lg bg-white `}
-                    sandbox="allow-scripts allow-same-origin"
-                    onLoad={() => setIsIframeLoaded(true)}
-                />
-                <Tool screenSize={screenSize} setScreenSize={setScreenSize} generatedCode={generatedCode} />
+        <div className='flex w-full flex-col lg:flex-row'>
+            <div className='flex min-w-0 flex-1 flex-col items-center p-2'>
+                {isLoading ? (
+                    <div className="flex h-[45vh] w-full items-center justify-center rounded-lg border bg-card sm:h-[65vh] lg:h-[85vh]" role="status">
+                        <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                            <Spinner className="size-5" /> Loading project…
+                        </div>
+                    </div>
+                ) : hasGeneratedCode ? (
+                    <>
+                        <iframe
+                            ref={iframeRef}
+                            title="Website Preview"
+                            srcDoc={HTML_code}
+                            className={`${screenSize ? 'w-full max-w-sm lg:w-100' : 'w-full'} h-[45vh] rounded-lg border bg-white sm:h-[65vh] lg:h-[85vh]`}
+                            sandbox="allow-scripts allow-same-origin"
+                            onLoad={() => setIsIframeLoaded(true)}
+                        />
+                        <Tool screenSize={screenSize} setScreenSize={setScreenSize} generatedCode={generatedCode} />
+                    </>
+                ) : (
+                    <div className="flex h-[45vh] w-full flex-col items-center justify-center rounded-lg border border-dashed bg-card px-6 text-center sm:h-[65vh] lg:h-[85vh]">
+                        <FileCode2 className="size-10 text-emerald-600" />
+                        <h2 className="mt-4 text-lg font-semibold">Your website preview will appear here</h2>
+                        <p className="mt-2 max-w-sm text-sm text-muted-foreground">Describe what you want to build in the chat above to generate an editable interface.</p>
+                    </div>
+                )}
             </div>
-            <Element/>
+            {hasGeneratedCode && !isLoading && (
+                <Element
+                    selectedEl={selectedElement}
+                    setSelectedElement={setSelectedElement}
+                    onCommit={() => syncElementToCode(selectedElement?.dataset?.editId)}
+                />
+            )}
         </div>
     );
 }

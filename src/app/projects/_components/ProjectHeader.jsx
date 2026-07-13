@@ -11,6 +11,7 @@ const ProjectHeader = ({setSave, dataLoading}) => {
   return (
     <div className='flex justify-between items-center p-2 border-b border-b-[#00ff88]'>
         <Image src={'/logo.svg'} alt='logo' height={40} width={40}/>
+        SatPat Build
     <Button onClick={handleClick} disabled={dataLoading} className='bg-gradient-to-br from-[#bebfbe] via-[#072616] to-[#113005] text-white'>Save{dataLoading&&<Spinner/>}</Button></div>
   )
 }

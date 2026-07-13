@@ -18,19 +18,18 @@ const router = useRouter()
 
   return (<>
 
-    <div className='flex items-center p-3 shadow border-b border-b-[#00ff88] justify-between'>
+    <div className='flex items-center gap-3 p-3 shadow border-b border-b-[#00ff88] justify-between'>
         <div>
        <Image className='' src={'/logo.svg'} alt="logo" width={40} height={40}/>
         </div>
-        <div>
-            <ul className='flex justify-evenly'>
-                <li>about</li>
-                <li>pricing</li>
-                <li></li>
+        <div className='hidden sm:block'>
+            <ul className='flex items-center gap-6 text-sm text-muted-foreground'>
+                <li><a className='transition-colors hover:text-foreground' href='#about'>About</a></li>
+                <li><a className='transition-colors hover:text-foreground' href='#pricing'>Pricing</a></li>
             </ul>
         </div>
-        <div>
-            <Button onClick={goLogin}>Log in</Button>
+        <div className='flex items-center gap-2'>
+            <Button variant='ghost' onClick={goLogin}>Log in</Button>
             <Button onClick={goSignup}>Get started</Button>
         </div>
     </div></>

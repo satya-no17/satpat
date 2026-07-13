@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/sidebar"
 import Image from "next/image"
 import { Button } from "./ui/button"
-import { PlusCircleIcon } from "lucide-react"
+import { LogOut } from "lucide-react"
 import { useState } from "react"
 import { Progress } from "./ui/progress"
 import NewProjectModal from "./newProjectModal"
@@ -19,6 +19,20 @@ import { useRouter } from "next/navigation"
 
 export function AppSidebar({userData}) {
   const router = useRouter()
+  const [showUpgradeWarning, setShowUpgradeWarning] = useState(false)
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true)
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' })
+      router.replace('/login')
+      router.refresh()
+    } catch (error) {
+      console.error('Logout failed:', error)
+      setIsLoggingOut(false)
+    }
+  }
 
   return (
     <Sidebar>
@@ -41,12 +55,20 @@ export function AppSidebar({userData}) {
         </SidebarGroup>
         <SidebarGroup />
       </SidebarContent>
-      <SidebarFooter className={'p-3'}>
-    <div className="p-3 border rounded-xl space-y-4 bg-secondary">
-      <h2 className="flex justify-between p-5">Credits..  <span className="font-bold">{userData.credits}</span></h2>
-      <Progress value={(userData.credits/10)*100}/>
-      <Button className={"w-full"}>Upgrade to Elite</Button>
-    </div>
+      <SidebarFooter className={'space-y-3 p-3'}>
+        <div className="space-y-4 rounded-xl border bg-secondary p-3">
+          <h2 className="flex justify-between p-5">Credits..  <span className="font-bold">{userData.credits}</span></h2>
+          <Progress value={(userData.credits/10)*100}/>
+          <Button className="w-full" onClick={() => setShowUpgradeWarning(true)}>Upgrade to Elite</Button>
+          {showUpgradeWarning && (
+            <p role="alert" className="rounded-lg border border-amber-300 bg-amber-50 p-2 text-xs text-amber-900">
+              Elite upgrades are not available during the testing period yet.
+            </p>
+          )}
+        </div>
+        <Button variant="outline" className="w-full" onClick={handleLogout} disabled={isLoggingOut}>
+          <LogOut /> {isLoggingOut ? 'Logging out…' : 'Log out'}
+        </Button>
       </SidebarFooter>
     </Sidebar>
   )
